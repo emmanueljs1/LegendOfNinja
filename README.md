@@ -1,4 +1,4 @@
-Legend of Ninja
+<h1>Legend of Ninja</h1>
 
 Final Project for CIS 120: Programming Languages and Techniques (Spring 2016)
 
