@@ -1,0 +1,127 @@
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=
+CIS 120 Game Project Proposal
+PennKey: emsu
+Name of TA you consulted with: Samantha Chung
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=
+
+===============
+=: Your Game :=
+===============
+
+- What game are you planning to implement? If it is a game of your own design,
+  or not especially well-known, provide a 2-3 sentence description of the game.
+
+	My game will be a platform game with a main character that has a sword. He 
+	can jump, move, and attack. He attacks enemies in a stage and once he's taken 
+	down all of them he can pass on to the next one. There will be a boss at the end. 
+
+- What classes and interfaces do you plan to create? How will the different
+  components of your game (the model, the GUI, etc.) interact?
+  
+	A class called Player and a limited number of classes to represent enemies
+	that will both implement a Character interface, which has code for
+	attacking, and health. 
+	
+	The Player and "Enemy" classes will extend a GameObj interface
+	that contains a function to draw the object and a function to move the object.
+	
+	I will have a Stage class containing the file name of the current stage,
+	with a method to draw the current stage with the Player, the enemies
+	in the stage, and any obstacles on the stage.
+	
+	I will also have a class called GameCourt. In this class the state of the game
+	will be stored, such as the number of enemies alive and the player's current 
+	health. According to the state in this class, it will either draw a stage or
+	display a game over screen.
+	
+	I will also have a class Game with pretty much the same functionality as the provided 
+	Game class. 
+
+- What do you think will be the most challenging thing to implement?
+
+	I think what will be the most challenging thing to implement will be making it so
+	that when the player attacks an enemy, the enemy dies and the state of the current
+	stage is updated. The same goes vice versa. (More generally, specific object 
+	interactions are what I believe will be the hardest part.)
+
+====================
+=: Core Concept 1 :=
+====================
+
+Concept 1: Appropriately modeling state using 2-D arrays or collections
+
+- What specific feature of your game will be implemented using this concept?
+
+	1) I will use a LinkedList of type Stage in my GameCourt class  will
+	have all of the stages, and it will connect each one. The head of the list will
+	always be the current stage being played, and when a stage is cleared and
+	the player moves on to the next stage, the previous stage is removed from
+	the list. 
+
+- Why does it make sense to implement this feature with this concept? Justify
+  why this is a non-trivial application of the concept in question.
+  
+	This list will have all of the stages, and it will connect each one. The head of
+	the list will always be the current stage being played, and when a stage is 
+	cleared and the player moves on to the next stage, the previous stage is removed 
+	from the list. Once the list is empty the player goes on to the boss stage.
+
+
+====================
+=: Core Concept 2 :=
+====================
+
+Concept 2: Using I/O to parse a novel file format
+
+- What specific feature of your game will be implemented using this concept?
+
+	I will be implementing this concept with high scores.
+	
+	High scores will be caculated in terms of how quickly the player beat the
+	game
+
+- Why does it make sense to implement this feature with this concept? Justify
+  why this is a non-trivial application of the concept in question.
+
+	It makes sense to implement the high score feature with this concept 
+	because every time the player beats the game the high score file
+	can be parsed and updated accordingly.
+
+====================
+=: Core Concept 3 :=
+====================
+
+Concept 3: Object-oriented design using inheritance and subtyping
+
+- What specific feature of your game will be implemented using this concept?
+
+	I will be implementing this with the GameObj interface and the Character
+	interface. The Player class and the multiple enemy classes will implement
+	these two interfaces.
+
+- Why does it make sense to implement this feature with this concept? Justify
+  why this is a non-trivial application of the concept in question.
+  
+  It makes sense to implement this feature with this concept because all
+  enemies and the player in the game will share common traits, such as
+  attacking, so it stands to reason to make them share methods.
+
+
+====================
+=: Core Concept 4 :=
+====================
+
+Concept 4: JUnit Testing
+
+- What specific feature of your game will be implemented using this concept?
+
+	I will be testing the state of a stage, such as whether or not the stage
+	is cleared when all the enemies are gone and if the player loses
+	when his health is at 0.
+
+- Why does it make sense to implement this feature with this concept? Justify
+  why this is a non-trivial application of the concept in question.
+  
+  It makes sense to test these things with JUnit testing because you have many 
+  cases that you want to make sure your game is taking into account, such as
+  successfully verifying that an enemy can kill the player and vice versa.
