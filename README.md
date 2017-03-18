@@ -9,4 +9,5 @@ Instructions for trying game out:
 2. Go to directory where file was downloaded and unzip.
 
 3. Open directory in terminal and type:
-   $ javac *.java && java Game
+
+   <b>$ javac *.java && java Game</b>
