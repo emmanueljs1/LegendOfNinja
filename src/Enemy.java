@@ -1,4 +1,4 @@
 
 public enum Enemy {
-    RedNinja, BlueNinja, YellowNinja; 
+    RedNinja, BlueNinja, YellowNinja;
 }
