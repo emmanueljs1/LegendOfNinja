@@ -12,8 +12,8 @@ public class Character extends GameObj {
         super(px, py, 0, 0, bx, by);
         try {
             img = ImageIO.read(new File(filename));
-            this.setWidth(img.getWidth());
-            this.setHeight(img.getHeight());
+            this.setWidth(img.getWidth() / 2);
+            this.setHeight(img.getHeight() / 2);
         }
         catch (Exception e) {
             System.out.println("ERROR: Character image not found.");
