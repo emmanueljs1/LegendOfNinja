@@ -21,32 +21,32 @@ import javax.swing.Timer;
 
 @SuppressWarnings("serial")
 public class GameCourt extends JPanel {
-    
+
     public static final int ONE_PIXEL = 10;
-    
+
     private String[] stageFilenames;
     private Enemy[] enemyTypes;
     private String playerFilename;
     private String swordFilename;
     private String highScoreTextFile;
     private BufferedReader highScoreReader;
-    
+
     private LinkedList<Stage> stages;
     private Stage currentStage;
     private Player player;
-    
+
     private boolean playing;
     private boolean gameOver;
     private boolean inTitleScreen;
     private boolean inInfoScreen;
     private boolean inHighScoreScreen;
     private boolean inVictoryScreen;
-    
+
     private int timeElapsed;
-    
-    public GameCourt(String[] stageFilenames, Enemy[] enemyTypes, String playerFilename, 
+
+    public GameCourt(String[] stageFilenames, Enemy[] enemyTypes, String playerFilename,
             String swordFilename, String highScoreTextFile) {
-        
+
         this.stageFilenames = stageFilenames;
         this.enemyTypes = enemyTypes;
         this.playerFilename = playerFilename;
@@ -58,23 +58,23 @@ public class GameCourt extends JPanel {
             e.printStackTrace();
         }
         stages = new LinkedList<>();
-        
+
        toTitleScreen();
-        
+
         if (stageFilenames.length != enemyTypes.length)  {
-            
+
             throw new IllegalArgumentException("ERROR: Not enough enemies/stages provided.");
-            
+
         }
-        
+
         setFocusable(true);
-        
+
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
- 
+
             }
         });
-        
+
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (playing) {
@@ -135,7 +135,7 @@ public class GameCourt extends JPanel {
                 }
             }
         });
-        
+
         Timer timer = new Timer(35, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                     tick();
@@ -143,33 +143,33 @@ public class GameCourt extends JPanel {
         });
         timer.start();
     }
-    
-    public void updateHighScores(String user) {       
+
+    public void updateHighScores(String user) {
         try {
             int timeElapsedInSeconds = timeElapsed * 35 / (100 * 60);
             BufferedReader highScoresIn = new BufferedReader(new FileReader(highScoreTextFile));
             String currentLine = highScoresIn.readLine();
             String[] newHighScores = new String[10];
-            
+
             String newHighScore = user + " " + timeElapsedInSeconds + " seconds";
-            
+
             int count = 0;
             boolean addHighScore = true;
-            
+
             if (currentLine != null) {
                 while (currentLine != null && count < 10) {
-                   
+
                     if (currentLine.indexOf(':') == -1) {
                         System.out.println("ERROR: Invalid format in high score file.");
                         return;
                     }
-                    
+
                     String[] splitLine = currentLine.split(" ", 3);
-                    
+
                     String[] score = splitLine[1].split(" ", 2);
-                        
+
                     int userTime = Integer.parseInt(score[0].trim());
-                    
+
                     if (timeElapsed < userTime && addHighScore) {
                             if (user.equals(splitLine[0])) {
                                 newHighScores[count] = newHighScore;
@@ -183,7 +183,7 @@ public class GameCourt extends JPanel {
                                 }
                                 count++;
                             }
-                            addHighScore = false;                     
+                            addHighScore = false;
                     }
                     else {
                         newHighScores[count] = currentLine;
@@ -194,35 +194,35 @@ public class GameCourt extends JPanel {
                     }
                     currentLine = highScoresIn.readLine();
                 }
-                
+
                 if (addHighScore && count < 10) {
                     newHighScores[count] = newHighScore;
                 }
-            } 
+            }
             else {
                 newHighScores[0] = newHighScore;
                 addHighScore = false;
             }
-     
+
             highScoresIn.close();
-            
+
             BufferedWriter highScoresOut = new BufferedWriter(new FileWriter(highScoreTextFile));
-        
+
             for (int i = 0; i < 10; i++) {
                 if (newHighScores[i] != null) {
                     highScoresOut.write(newHighScores[i]);
                     highScoresOut.newLine();
                 }
             }
-            
-            highScoresOut.close(); 
-            
-        } 
+
+            highScoresOut.close();
+
+        }
         catch (Exception e) {
             e.printStackTrace();
-        }        
+        }
     }
-    
+
     public void tick() {
         if (playing) {
             int tickCount = timeElapsed % 20;
@@ -235,7 +235,7 @@ public class GameCourt extends JPanel {
         }
         repaint();
     }
-    
+
     public void toVictoryScreen() {
         inTitleScreen = false;
         playing = false;
@@ -244,7 +244,7 @@ public class GameCourt extends JPanel {
         gameOver = false;
         inVictoryScreen = true;
     }
-    
+
     public void toGameOverScreen() {
         inVictoryScreen = false;
         inTitleScreen = false;
@@ -253,7 +253,7 @@ public class GameCourt extends JPanel {
         inHighScoreScreen = false;
         gameOver = true;
     }
-    
+
     public void toHighScoreScreen() {
         inVictoryScreen = false;
         inTitleScreen = false;
@@ -262,7 +262,7 @@ public class GameCourt extends JPanel {
         inInfoScreen = false;
         inHighScoreScreen = true;
     }
-    
+
     public void toInfoScreen() {
         inTitleScreen = false;
         inVictoryScreen = false;
@@ -271,7 +271,7 @@ public class GameCourt extends JPanel {
         inHighScoreScreen = false;
         inInfoScreen = true;
     }
-    
+
     public void toTitleScreen() {
         inVictoryScreen = false;
         playing = false;
@@ -280,9 +280,9 @@ public class GameCourt extends JPanel {
         inHighScoreScreen = false;
         inTitleScreen = true;
     }
-    
+
     public void reset() {
-        
+
         inTitleScreen = false;
         inVictoryScreen = false;
         playing = true;
@@ -291,27 +291,27 @@ public class GameCourt extends JPanel {
         inHighScoreScreen = false;
         player = new Player(0, 0, getPreferredSize().width, getPreferredSize().height,
                 playerFilename, swordFilename);
-        
+
         for (int i = 0; i < stageFilenames.length; i++) {
             stages.add(new Stage(stageFilenames[i], player, enemyTypes[i], 3));
         }
-        
+
         currentStage = stages.remove();
-        
+
     }
-    
+
     public boolean playerWon() {
         return inVictoryScreen;
     }
-    
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (inTitleScreen) {
             try {
                 BufferedImage titleScreenImg = ImageIO.read(new File("titlescreen.png"));
-                g.drawImage(titleScreenImg, 0, 0, titleScreenImg.getWidth(), 
-                        titleScreenImg.getHeight(), null); 
+                g.drawImage(titleScreenImg, 0, 0, titleScreenImg.getWidth(),
+                        titleScreenImg.getHeight(), null);
             }
             catch (Exception e) {
                 System.out.println("ERROR: \'Title screen\' image file not found.");
@@ -320,7 +320,7 @@ public class GameCourt extends JPanel {
         else if (inInfoScreen) {
             try {
                 BufferedImage infoScreenImg = ImageIO.read(new File("infoscreen.png"));
-                g.drawImage(infoScreenImg, 0, 0, infoScreenImg.getWidth(), 
+                g.drawImage(infoScreenImg, 0, 0, infoScreenImg.getWidth(),
                         infoScreenImg.getHeight(), null);
             }
             catch (Exception e) {
@@ -330,7 +330,7 @@ public class GameCourt extends JPanel {
         else if (inVictoryScreen) {
             try {
                 BufferedImage victoryScreenImg = ImageIO.read(new File("victoryscreen.png"));
-                g.drawImage(victoryScreenImg, 0, 0, victoryScreenImg.getWidth(), 
+                g.drawImage(victoryScreenImg, 0, 0, victoryScreenImg.getWidth(),
                         victoryScreenImg.getHeight(), null);
             }
             catch (Exception e) {
@@ -340,23 +340,23 @@ public class GameCourt extends JPanel {
         else if (inHighScoreScreen) {
             try {
                 BufferedImage HighScoreScreenImg = ImageIO.read(new File("highscores.png"));
-                g.drawImage(HighScoreScreenImg, 0, 0, HighScoreScreenImg.getWidth(), 
+                g.drawImage(HighScoreScreenImg, 0, 0, HighScoreScreenImg.getWidth(),
                         HighScoreScreenImg.getHeight(), null);
-                
+
                 String currentLine;
-                
+
                 int i = 1;
-                
+
                 while ((currentLine = highScoreReader.readLine()) != null) {
                     g.setColor(Color.BLACK);
                     g.drawString(currentLine, 0, 50 * i);
                     i++;
                 }
-                
+
                 highScoreReader.close();
-                
+
                 highScoreReader = new BufferedReader(new FileReader(highScoreTextFile));
-                
+
             }
             catch (Exception e) {
                 System.out.println("ERROR: \'High score screen\' image file not found.");
@@ -378,13 +378,13 @@ public class GameCourt extends JPanel {
     }
     @Override
     public Dimension getPreferredSize() {
-        
-        Dimension defaultDimension = new Dimension(1500, 1000);
-        
+
+        Dimension defaultDimension = new Dimension(750, 500);
+
         if (currentStage != null) {
             return currentStage.getPreferredSize();
         }
-        
+
         return defaultDimension;
     }
 }
