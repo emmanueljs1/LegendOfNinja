@@ -22,7 +22,7 @@ import javax.swing.Timer;
 @SuppressWarnings("serial")
 public class GameCourt extends JPanel {
 
-    public static final int ONE_PIXEL = 10;
+    public static final int ONE_PIXEL = 5;
 
     private String[] stageFilenames;
     private Enemy[] enemyTypes;
@@ -52,11 +52,6 @@ public class GameCourt extends JPanel {
         this.playerFilename = playerFilename;
         this.swordFilename = swordFilename;
         this.highScoreTextFile = highScoreTextFile;
-        try {
-            highScoreReader = new BufferedReader(new FileReader(highScoreTextFile));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
         stages = new LinkedList<>();
 
        toTitleScreen();
@@ -146,12 +141,11 @@ public class GameCourt extends JPanel {
 
     public void updateHighScores(String user) {
         try {
-            int timeElapsedInSeconds = timeElapsed * 35 / (100 * 60);
             BufferedReader highScoresIn = new BufferedReader(new FileReader(highScoreTextFile));
             String currentLine = highScoresIn.readLine();
             String[] newHighScores = new String[10];
 
-            String newHighScore = user + " " + timeElapsedInSeconds + " seconds";
+            String newHighScore = user + ": " + timeElapsed;
 
             int count = 0;
             boolean addHighScore = true;
@@ -164,11 +158,9 @@ public class GameCourt extends JPanel {
                         return;
                     }
 
-                    String[] splitLine = currentLine.split(" ", 3);
+                    String[] splitLine = currentLine.split(":", 2);
 
-                    String[] score = splitLine[1].split(" ", 2);
-
-                    int userTime = Integer.parseInt(score[0].trim());
+                    int userTime = Integer.parseInt(splitLine[1].trim());
 
                     if (timeElapsed < userTime && addHighScore) {
                             if (user.equals(splitLine[0])) {
@@ -255,12 +247,19 @@ public class GameCourt extends JPanel {
     }
 
     public void toHighScoreScreen() {
-        inVictoryScreen = false;
-        inTitleScreen = false;
-        playing = false;
-        gameOver = false;
-        inInfoScreen = false;
-        inHighScoreScreen = true;
+      try {
+          inVictoryScreen = false;
+          inTitleScreen = false;
+          playing = false;
+          gameOver = false;
+          inInfoScreen = false;
+          highScoreReader = new BufferedReader(new FileReader(highScoreTextFile));
+          inHighScoreScreen = true;
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+        toTitleScreen();
+      }
     }
 
     public void toInfoScreen() {
@@ -310,8 +309,8 @@ public class GameCourt extends JPanel {
         if (inTitleScreen) {
             try {
                 BufferedImage titleScreenImg = ImageIO.read(new File("titlescreen.png"));
-                g.drawImage(titleScreenImg, 0, 0, titleScreenImg.getWidth(),
-                        titleScreenImg.getHeight(), null);
+                g.drawImage(titleScreenImg, 0, 0, titleScreenImg.getWidth() / 2,
+                        titleScreenImg.getHeight() / 2, null);
             }
             catch (Exception e) {
                 System.out.println("ERROR: \'Title screen\' image file not found.");
@@ -320,8 +319,8 @@ public class GameCourt extends JPanel {
         else if (inInfoScreen) {
             try {
                 BufferedImage infoScreenImg = ImageIO.read(new File("infoscreen.png"));
-                g.drawImage(infoScreenImg, 0, 0, infoScreenImg.getWidth(),
-                        infoScreenImg.getHeight(), null);
+                g.drawImage(infoScreenImg, 0, 0, infoScreenImg.getWidth() / 2,
+                        infoScreenImg.getHeight() / 2, null);
             }
             catch (Exception e) {
                 System.out.println("ERROR: \'Info screen\' image file not found.");
@@ -330,8 +329,8 @@ public class GameCourt extends JPanel {
         else if (inVictoryScreen) {
             try {
                 BufferedImage victoryScreenImg = ImageIO.read(new File("victoryscreen.png"));
-                g.drawImage(victoryScreenImg, 0, 0, victoryScreenImg.getWidth(),
-                        victoryScreenImg.getHeight(), null);
+                g.drawImage(victoryScreenImg, 0, 0, victoryScreenImg.getWidth() / 2,
+                        victoryScreenImg.getHeight() / 2, null);
             }
             catch (Exception e) {
                 System.out.println("ERROR: \'Victory screen\' image file not found.");
@@ -340,22 +339,20 @@ public class GameCourt extends JPanel {
         else if (inHighScoreScreen) {
             try {
                 BufferedImage HighScoreScreenImg = ImageIO.read(new File("highscores.png"));
-                g.drawImage(HighScoreScreenImg, 0, 0, HighScoreScreenImg.getWidth(),
-                        HighScoreScreenImg.getHeight(), null);
+                g.drawImage(HighScoreScreenImg, 0, 0, HighScoreScreenImg.getWidth() / 2,
+                        HighScoreScreenImg.getHeight() / 2, null);
 
                 String currentLine;
 
                 int i = 1;
 
-                while ((currentLine = highScoreReader.readLine()) != null) {
-                    g.setColor(Color.BLACK);
+                while (i < 5 && (currentLine = highScoreReader.readLine()) != null) {
+                    g.setColor(Color.BLACK);                  
                     g.drawString(currentLine, 0, 50 * i);
                     i++;
                 }
 
                 highScoreReader.close();
-
-                highScoreReader = new BufferedReader(new FileReader(highScoreTextFile));
 
             }
             catch (Exception e) {
@@ -365,8 +362,8 @@ public class GameCourt extends JPanel {
         else if (gameOver) {
             try {
                 BufferedImage gameOverImg = ImageIO.read(new File("gameover.png"));
-                g.drawImage(gameOverImg, 0, 0, gameOverImg.getWidth(),
-                        gameOverImg.getHeight(), null);
+                g.drawImage(gameOverImg, 0, 0, gameOverImg.getWidth() / 2,
+                        gameOverImg.getHeight() / 2, null);
             }
             catch (Exception e) {
                 System.out.println("ERROR: \'Game over\' image file not found.");
