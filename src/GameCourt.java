@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.List;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -29,7 +30,7 @@ public class GameCourt extends JPanel {
     private String playerFilename;
     private String swordFilename;
     private String highScoreTextFile;
-    private BufferedReader highScoreReader;
+    private List<String> highScores;
 
     private LinkedList<Stage> stages;
     private Stage currentStage;
@@ -41,6 +42,7 @@ public class GameCourt extends JPanel {
     private boolean inInfoScreen;
     private boolean inHighScoreScreen;
     private boolean inVictoryScreen;
+    private boolean inAir;
 
     private int timeElapsed;
 
@@ -80,6 +82,7 @@ public class GameCourt extends JPanel {
                     else if (e.getKeyCode() == KeyEvent.VK_W) {
                         if (player.getPosY() == 0) {
                             player.fall(5 * ONE_PIXEL);
+                            inAir = true;
                         }
                     }
                     else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -122,13 +125,6 @@ public class GameCourt extends JPanel {
                     }
                 }
             }
-            public void keyReleased(KeyEvent e) {
-                if (playing) {
-                    if (e.getKeyCode() == KeyEvent.VK_W) {
-                        player.fall(-5 * ONE_PIXEL);
-                    }
-                }
-            }
         });
 
         Timer timer = new Timer(35, new ActionListener() {
@@ -153,43 +149,45 @@ public class GameCourt extends JPanel {
             if (currentLine != null) {
                 while (currentLine != null && count < 10) {
 
-                    if (currentLine.indexOf(':') == -1) {
-                        System.out.println("ERROR: Invalid format in high score file.");
-                        return;
-                    }
+                    if (currentLine.trim().length() > 0) {
 
-                    String[] splitLine = currentLine.split(":", 2);
+                      if (currentLine.indexOf(':') == -1) {
+                          System.out.println("ERROR: Invalid format in high score file.");
+                          return;
+                      }
 
-                    int userTime = Integer.parseInt(splitLine[1].trim());
+                      String[] splitLine = currentLine.split(":", 2);
 
-                    if (timeElapsed < userTime && addHighScore) {
-                            if (user.equals(splitLine[0])) {
-                                newHighScores[count] = newHighScore;
-                                count++;
-                            }
-                            else {
-                                newHighScores[count] = newHighScore;
-                                if (count + 1 < 10) {
-                                    newHighScores[count + 1] = currentLine;
-                                    count++;
-                                }
-                                count++;
-                            }
-                            addHighScore = false;
-                    }
-                    else {
-                        newHighScores[count] = currentLine;
-                        count++;
-                        if (user.equals(splitLine[0])) {
-                            addHighScore = false;
-                        }
-                    }
-                    currentLine = highScoresIn.readLine();
-                }
+                      int userTime = Integer.parseInt(splitLine[1].trim());
 
-                if (addHighScore && count < 10) {
-                    newHighScores[count] = newHighScore;
-                }
+                      if (timeElapsed < userTime && addHighScore) {
+                              if (user.equals(splitLine[0])) {
+                                  newHighScores[count] = newHighScore;
+                                  count++;
+                              }
+                              else {
+                                  newHighScores[count] = newHighScore;
+                                  if (count + 1 < 10) {
+                                      newHighScores[count + 1] = currentLine;
+                                      count++;
+                                  }
+                                  count++;
+                              }
+                              addHighScore = false;
+                      }
+                      else {
+                          newHighScores[count] = currentLine;
+                          count++;
+                          if (user.equals(splitLine[0])) {
+                              addHighScore = false;
+                          }
+                      }
+                  }
+                  currentLine = highScoresIn.readLine();
+              }
+            }
+            if (addHighScore && count < 10) {
+                newHighScores[count] = newHighScore;
             }
             else {
                 newHighScores[0] = newHighScore;
@@ -208,7 +206,6 @@ public class GameCourt extends JPanel {
             }
 
             highScoresOut.close();
-
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -219,6 +216,16 @@ public class GameCourt extends JPanel {
         if (playing) {
             int tickCount = timeElapsed % 20;
             currentStage.updateEnemies(tickCount);
+
+            if (inAir) {
+              if (player.getPosY() == 0) {
+                inAir = false;
+              }
+              else {
+                player.fall(-1 * ONE_PIXEL);
+              }
+            }
+
             if (currentStage.playerIntersectsAnEnemy()) {
                 toGameOverScreen();
                 stages.clear();
@@ -248,17 +255,35 @@ public class GameCourt extends JPanel {
 
     public void toHighScoreScreen() {
       try {
-          inVictoryScreen = false;
-          inTitleScreen = false;
-          playing = false;
-          gameOver = false;
-          inInfoScreen = false;
-          highScoreReader = new BufferedReader(new FileReader(highScoreTextFile));
-          inHighScoreScreen = true;
+        inVictoryScreen = false;
+        inTitleScreen = false;
+        playing = false;
+        gameOver = false;
+        inInfoScreen = false;
+        inHighScoreScreen = true;
+
+        highScores = new LinkedList<String>();
+
+        BufferedReader highScoreReader = new BufferedReader(new FileReader(highScoreTextFile));
+
+        String line = null;
+
+        while ((line = highScoreReader.readLine()) != null) {
+
+          String[] splitLine = line.split(":");
+
+          int timeInSeconds = 35 * Integer.parseInt(splitLine[1].trim()) / 1000;
+
+          String scoreLine = splitLine[0] + " finished in " + timeInSeconds + " seconds.";
+
+          highScores.add(scoreLine);
+        }
+
+        highScoreReader.close();
+
       }
       catch (Exception e) {
-        e.printStackTrace();
-        toTitleScreen();
+        System.out.println("Exception while reading high scores");
       }
     }
 
@@ -342,17 +367,16 @@ public class GameCourt extends JPanel {
                 g.drawImage(HighScoreScreenImg, 0, 0, HighScoreScreenImg.getWidth() / 2,
                         HighScoreScreenImg.getHeight() / 2, null);
 
-                String currentLine;
-
                 int i = 1;
 
-                while (i < 5 && (currentLine = highScoreReader.readLine()) != null) {
-                    g.setColor(Color.BLACK);                  
-                    g.drawString(currentLine, 0, 50 * i);
-                    i++;
+                for (String scoreLine : highScores) {
+                  if (i > 5) {
+                    break;
+                  }
+                  g.setColor(Color.BLACK);
+                  g.drawString(scoreLine, 0, 50 * i);
+                  i++;
                 }
-
-                highScoreReader.close();
 
             }
             catch (Exception e) {
