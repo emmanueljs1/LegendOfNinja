@@ -27,19 +27,19 @@ public class Stage extends JPanel {
         switch (enemyType) {
         case RedNinja:
             for (int i = 0; i < numEnemies; i++) {
-                enemies.add(new RedNinja(300 * (i + 1), 0, "redninja.png", getPreferredSize().width,
+                enemies.add(new RedNinja(150 * (i + 1), 0, "redninja.png", getPreferredSize().width,
                         getPreferredSize().height));
             }
             break;
         case BlueNinja:
             for (int i = 0; i < numEnemies; i++) {
-                enemies.add(new BlueNinja(300 * (i + 1), 0, "blueninja.png",
+                enemies.add(new BlueNinja(150 * (i + 1), 0, "blueninja.png",
                         getPreferredSize().width, getPreferredSize().height));
             }
             break;
         case YellowNinja:
             for (int i = 0; i < numEnemies; i++) {
-                enemies.add(new YellowNinja(300 * (i + 1), 0, "yellowninja.png",
+                enemies.add(new YellowNinja(150 * (i + 1), 0, "yellowninja.png",
                         getPreferredSize().width, getPreferredSize().height));
             }
             break;
@@ -78,6 +78,10 @@ public class Stage extends JPanel {
             }
         }
         return false;
+    }
+
+    public boolean playerIntersectsWall() {
+      return player.swordIntersectsWall(getPreferredSize().width);
     }
 
     @Override

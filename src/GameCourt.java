@@ -91,17 +91,6 @@ public class GameCourt extends JPanel {
                             currentStage.killEnemy(enemyAttacked);
                         }
                     }
-                    else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        if (currentStage.getNumEnemies() == 0) {
-                            if (stages.size() > 0) {
-                                currentStage = stages.remove();
-                                player.resetPos();
-                            }
-                            else {
-                                toVictoryScreen();
-                            }
-                        }
-                    }
                 }
                 else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if (inTitleScreen) {
@@ -230,6 +219,19 @@ public class GameCourt extends JPanel {
                 toGameOverScreen();
                 stages.clear();
             }
+
+            if (currentStage.playerIntersectsWall()) {
+                if (currentStage.getNumEnemies() == 0) {
+                    if (stages.size() > 0) {
+                        currentStage = stages.remove();
+                        player.resetPos();
+                    }
+                    else {
+                        toVictoryScreen();
+                    }
+                }
+            }
+
             timeElapsed++;
         }
         repaint();
