@@ -24,25 +24,27 @@ public class Stage extends JPanel {
         enemies = new LinkedList<>();
         this.player = player;
 
+        int distanceBetweenCharacters = getPreferredSize().width / (numEnemies + 1) + 1;
+
         switch (enemyType) {
-        case RedNinja:
-            for (int i = 0; i < numEnemies; i++) {
-                enemies.add(new RedNinja(150 * (i + 1), 0, "redninja.png", getPreferredSize().width,
-                        getPreferredSize().height));
-            }
-            break;
-        case BlueNinja:
-            for (int i = 0; i < numEnemies; i++) {
-                enemies.add(new BlueNinja(150 * (i + 1), 0, "blueninja.png",
-                        getPreferredSize().width, getPreferredSize().height));
-            }
-            break;
-        case YellowNinja:
-            for (int i = 0; i < numEnemies; i++) {
-                enemies.add(new YellowNinja(150 * (i + 1), 0, "yellowninja.png",
-                        getPreferredSize().width, getPreferredSize().height));
-            }
-            break;
+          case RedNinja:
+              for (int i = 0; i < numEnemies; i++) {
+                  enemies.add(new RedNinja(distanceBetweenCharacters * (i + 1), 0,
+                          "redninja.png", getPreferredSize().width, getPreferredSize().height));
+              }
+              break;
+          case BlueNinja:
+              for (int i = 0; i < numEnemies; i++) {
+                  enemies.add(new BlueNinja(distanceBetweenCharacters * (i + 1), 0,
+                          "blueninja.png", getPreferredSize().width, getPreferredSize().height));
+              }
+              break;
+          case YellowNinja:
+              for (int i = 0; i < numEnemies; i++) {
+                  enemies.add(new YellowNinja(distanceBetweenCharacters * (i + 1), 0,
+                          "yellowninja.png", getPreferredSize().width, getPreferredSize().height));
+              }
+              break;
         }
     }
 

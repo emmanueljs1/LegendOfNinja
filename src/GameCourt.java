@@ -232,6 +232,8 @@ public class GameCourt extends JPanel {
                 }
             }
 
+            // TODO: JOptionPane asking for name of player
+
             timeElapsed++;
         }
         repaint();
@@ -319,7 +321,7 @@ public class GameCourt extends JPanel {
                 playerFilename, swordFilename);
 
         for (int i = 0; i < stageFilenames.length; i++) {
-            stages.add(new Stage(stageFilenames[i], player, enemyTypes[i], 3));
+            stages.add(new Stage(stageFilenames[i], player, enemyTypes[i], 2));
         }
 
         currentStage = stages.remove();
